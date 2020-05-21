@@ -17,4 +17,8 @@
 // TODO: At the moment the separation between Document and compile result is not really clear.
 // For example, a compiler is created for every document, even though that should not be needed.
 // Ideally, we would have a more higher level abstraction.
+//
+// One idea would be, to have a DocumentCache and PackageCache.
+// DocumentCache is responsible for caching documents and what packages they belong to, while PackageCache is responsible for building packages and caching the build result.
+// If a file does not belong to a package (yet), it would have a separate package.
 package cache
