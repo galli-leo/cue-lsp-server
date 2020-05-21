@@ -23,7 +23,7 @@ For example, `builtin` had to be exposed.
 
 ## Project Layout
 
-### cue-vscode-ext/
+### [cue-vscode-ext](cue-vscode-ext/)
 
 Contains a Visual Studio Code extension to use the cue LSP with.
 
