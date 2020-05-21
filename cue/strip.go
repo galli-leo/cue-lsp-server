@@ -108,7 +108,7 @@ func (x *mergedValues) evalPartial(ctx *context) evaluated {
 	return obj
 }
 
-func (x *mergedValues) kind() kind {
+func (x *mergedValues) kind() ValKind {
 	k := x.values[0].kind()
 	for _, v := range x.values {
 		k = unifyType(k, v.kind())

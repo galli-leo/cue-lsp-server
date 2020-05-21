@@ -1,0 +1,55 @@
+{
+	"name": "cue-lsp",
+	"description": "VSCode part of a language server",
+	"author": "cuelang",
+	"license": "MIT",
+	"version": "0.0.1",
+	"publisher": "cuelang",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cuelang/cue"
+	},
+	"engines": {
+		"vscode": "^1.43.0"
+	},
+	"activationEvents": [
+		"onLanguage:cue"
+	],
+	"main": "./out/extension",
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "Example configuration",
+			"properties": {
+				"cue-lsp.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "off",
+					"description": "Traces the communication between VS Code and the language server."
+				}
+			}
+		}
+	},
+	"dependencies": {
+		"vscode-languageclient": "^6.1.3"
+	},
+	"scripts": {
+		"compile": "tsc -b",
+		"watch": "tsc -b -w"
+	},
+	"devDependencies": {
+		"@types/node": "^13.13.5",
+		"@types/vscode": "1.43.0",
+		"vscode-test": "^1.3.0",
+		"@types/mocha": "^5.2.7",
+		"mocha": "^6.2.2",
+		"eslint": "^6.4.0",
+		"@typescript-eslint/parser": "^2.3.0",
+		"typescript": "^3.8.3"
+	}
+}

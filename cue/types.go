@@ -321,7 +321,7 @@ func marshalList(l *Iterator) (b []byte, err errors.Error) {
 	return b, nil
 }
 
-func (v Value) getNum(k kind) (*numLit, errors.Error) {
+func (v Value) getNum(k ValKind) (*numLit, errors.Error) {
 	v, _ = v.Default()
 	if err := v.checkKind(v.ctx(), k); err != nil {
 		return nil, v.toErr(err)
@@ -555,8 +555,8 @@ type valueData struct {
 }
 
 // path returns the path of the value.
-func (v *valueData) appendPath(a []string, idx *index) ([]string, kind) {
-	var k kind
+func (v *valueData) appendPath(a []string, idx *index) ([]string, ValKind) {
+	var k ValKind
 	if v.parent != nil {
 		a, k = v.parent.appendPath(a, idx)
 	}
@@ -862,10 +862,10 @@ func (v Value) IncompleteKind() Kind {
 	if v.path == nil {
 		return BottomKind
 	}
-	var k kind
+	var k ValKind
 	x := v.path.v.evalPartial(v.ctx())
 	switch x := convertBuiltin(x).(type) {
-	case *builtin:
+	case *Builtin:
 		k = x.representedKind()
 	case *customValidator:
 		k = x.call.Params[0]
@@ -873,7 +873,7 @@ func (v Value) IncompleteKind() Kind {
 		k = x.kind()
 	}
 	vk := BottomKind // Everything is a bottom kind.
-	for i := kind(1); i < nonGround; i <<= 1 {
+	for i := ValKind(1); i < nonGround; i <<= 1 {
 		if k&i != 0 {
 			switch i {
 			case nullKind:
@@ -1129,7 +1129,7 @@ func (v Value) Exists() bool {
 	return exists(v.eval(v.ctx()))
 }
 
-func (v Value) checkKind(ctx *context, want kind) *bottom {
+func (v Value) checkKind(ctx *context, want ValKind) *bottom {
 	if v.path == nil {
 		return errNotExists
 	}

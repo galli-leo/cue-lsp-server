@@ -1309,7 +1309,7 @@ func (x *lambdaExpr) binOp(ctx *context, src source, op op, other evaluated) eva
 	return ctx.mkIncompatible(src, op, x, other)
 }
 
-func (x *builtin) binOp(ctx *context, src source, op op, other evaluated) evaluated {
+func (x *Builtin) binOp(ctx *context, src source, op op, other evaluated) evaluated {
 	if _, isUnify := op.unifyType(); isUnify && evaluated(x) == other {
 		return x
 	}

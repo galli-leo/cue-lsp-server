@@ -329,7 +329,7 @@ func (idx *index) loadInstance(p *build.Instance) *Instance {
 	if inst.Err == nil {
 		// inst.instance.index.state = s
 		// inst.instance.inst = p
-		inst.Err = resolveFiles(idx, p)
+		inst.Err = ResolveFiles(idx, p)
 		for _, f := range files {
 			err := inst.insertFile(f)
 			inst.Err = errors.Append(inst.Err, err)
@@ -345,7 +345,7 @@ func lineStr(idx *index, n ast.Node) string {
 	return n.Pos().String()
 }
 
-func resolveFiles(idx *index, p *build.Instance) errors.Error {
+func ResolveFiles(idx *index, p *build.Instance) errors.Error {
 	// Link top-level declarations. As top-level entries get unified, an entry
 	// may be linked to any top-level entry of any of the files.
 	allFields := map[string]ast.Node{}

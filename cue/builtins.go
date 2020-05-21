@@ -42,7 +42,7 @@ import (
 )
 
 func init() {
-	initBuiltins(builtinPackages)
+	initBuiltins(BuiltinPackages)
 }
 
 var _ io.Reader
@@ -147,12 +147,12 @@ func timeFormat(value, layout string) (bool, error) {
 	return true, nil
 }
 
-var builtinPackages = map[string]*builtinPkg{
+var BuiltinPackages = map[string]*BuiltinPkg{
 	"": {
-		native: []*builtin{{}},
+		Native: []*Builtin{{}},
 	},
 	"crypto/md5": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:  "Size",
 			Const: "16",
 		}, {
@@ -160,7 +160,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "64",
 		}, {
 			Name:   "Sum",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -174,7 +174,7 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"crypto/sha1": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:  "Size",
 			Const: "20",
 		}, {
@@ -182,7 +182,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "64",
 		}, {
 			Name:   "Sum",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -196,7 +196,7 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"crypto/sha256": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:  "Size",
 			Const: "32",
 		}, {
@@ -207,7 +207,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "64",
 		}, {
 			Name:   "Sum256",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -220,7 +220,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Sum224",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -234,7 +234,7 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"crypto/sha512": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:  "Size",
 			Const: "64",
 		}, {
@@ -251,7 +251,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "128",
 		}, {
 			Name:   "Sum512",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -264,7 +264,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Sum384",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -277,7 +277,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Sum512_224",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -290,7 +290,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Sum512_256",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -304,9 +304,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"encoding/base64": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "EncodedLen",
-			Params: []kind{topKind, intKind},
+			Params: []ValKind{topKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				encoding, n := c.value(0), c.int(1)
@@ -321,7 +321,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "DecodedLen",
-			Params: []kind{topKind, intKind},
+			Params: []ValKind{topKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				encoding, x := c.value(0), c.int(1)
@@ -336,7 +336,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Encode",
-			Params: []kind{topKind, bytesKind | stringKind},
+			Params: []ValKind{topKind, bytesKind | stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				encoding, src := c.value(0), c.bytes(1)
@@ -351,7 +351,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Decode",
-			Params: []kind{topKind, stringKind},
+			Params: []ValKind{topKind, stringKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				encoding, s := c.value(0), c.string(1)
@@ -367,9 +367,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"encoding/csv": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Encode",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				x := c.value(0)
@@ -408,7 +408,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Decode",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				r := c.reader(0)
@@ -421,9 +421,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"encoding/hex": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "EncodedLen",
-			Params: []kind{intKind},
+			Params: []ValKind{intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				n := c.int(0)
@@ -435,7 +435,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "DecodedLen",
-			Params: []kind{intKind},
+			Params: []ValKind{intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				x := c.int(0)
@@ -447,7 +447,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Decode",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -459,7 +459,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Dump",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -471,7 +471,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Encode",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				src := c.bytes(0)
@@ -484,9 +484,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"encoding/json": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Valid",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -498,7 +498,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Compact",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				src := c.bytes(0)
@@ -514,7 +514,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Indent",
-			Params: []kind{bytesKind | stringKind, stringKind, stringKind},
+			Params: []ValKind{bytesKind | stringKind, stringKind, stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				src, prefix, indent := c.bytes(0), c.string(1), c.string(2)
@@ -530,7 +530,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "HTMLEscape",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				src := c.bytes(0)
@@ -544,7 +544,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Marshal",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				v := c.value(0)
@@ -557,7 +557,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "MarshalStream",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				v := c.value(0)
@@ -583,7 +583,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Unmarshal",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: topKind,
 			Func: func(c *callCtxt) {
 				b := c.bytes(0)
@@ -603,7 +603,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Validate",
-			Params: []kind{bytesKind | stringKind, topKind},
+			Params: []ValKind{bytesKind | stringKind, topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				b, v := c.bytes(0), c.value(1)
@@ -629,9 +629,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"encoding/yaml": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Marshal",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				v := c.value(0)
@@ -651,7 +651,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "MarshalStream",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				v := c.value(0)
@@ -687,7 +687,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Unmarshal",
-			Params: []kind{bytesKind | stringKind},
+			Params: []ValKind{bytesKind | stringKind},
 			Result: topKind,
 			Func: func(c *callCtxt) {
 				data := c.bytes(0)
@@ -699,7 +699,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Validate",
-			Params: []kind{bytesKind | stringKind, topKind},
+			Params: []ValKind{bytesKind | stringKind, topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				b, v := c.bytes(0), c.value(1)
@@ -733,7 +733,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ValidatePartial",
-			Params: []kind{bytesKind | stringKind, topKind},
+			Params: []ValKind{bytesKind | stringKind, topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				b, v := c.bytes(0), c.value(1)
@@ -768,9 +768,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"html": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Escape",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -782,7 +782,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Unescape",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -795,9 +795,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"list": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Drop",
-			Params: []kind{listKind, intKind},
+			Params: []ValKind{listKind, intKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				x, n := c.list(0), c.int(1)
@@ -817,7 +817,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FlattenN",
-			Params: []kind{topKind, intKind},
+			Params: []ValKind{topKind, intKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				xs, depth := c.value(0), c.int(1)
@@ -851,7 +851,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Take",
-			Params: []kind{listKind, intKind},
+			Params: []ValKind{listKind, intKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				x, n := c.list(0), c.int(1)
@@ -871,7 +871,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Slice",
-			Params: []kind{listKind, intKind, intKind},
+			Params: []ValKind{listKind, intKind, intKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				x, i, j := c.list(0), c.int(1), c.int(2)
@@ -899,7 +899,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "MinItems",
-			Params: []kind{listKind, intKind},
+			Params: []ValKind{listKind, intKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				a, n := c.list(0), c.int(1)
@@ -911,7 +911,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "MaxItems",
-			Params: []kind{listKind, intKind},
+			Params: []ValKind{listKind, intKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				a, n := c.list(0), c.int(1)
@@ -923,7 +923,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "UniqueItems",
-			Params: []kind{listKind},
+			Params: []ValKind{listKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				a := c.list(0)
@@ -945,7 +945,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Contains",
-			Params: []kind{listKind, topKind},
+			Params: []ValKind{listKind, topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				a, v := c.list(0), c.value(1)
@@ -962,7 +962,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Avg",
-			Params: []kind{listKind},
+			Params: []ValKind{listKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				xs := c.decimalList(0)
@@ -992,7 +992,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Max",
-			Params: []kind{listKind},
+			Params: []ValKind{listKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				xs := c.decimalList(0)
@@ -1014,7 +1014,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Min",
-			Params: []kind{listKind},
+			Params: []ValKind{listKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				xs := c.decimalList(0)
@@ -1036,7 +1036,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Product",
-			Params: []kind{listKind},
+			Params: []ValKind{listKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				xs := c.decimalList(0)
@@ -1055,7 +1055,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Range",
-			Params: []kind{numKind, numKind, numKind},
+			Params: []ValKind{numKind, numKind, numKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				start, limit, step := c.decimal(0), c.decimal(1), c.decimal(2)
@@ -1098,7 +1098,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Sum",
-			Params: []kind{listKind},
+			Params: []ValKind{listKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				xs := c.decimalList(0)
@@ -1117,7 +1117,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Sort",
-			Params: []kind{listKind, topKind},
+			Params: []ValKind{listKind, topKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				list, cmp := c.list(0), c.value(1)
@@ -1132,7 +1132,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "SortStable",
-			Params: []kind{listKind, topKind},
+			Params: []ValKind{listKind, topKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				list, cmp := c.list(0), c.value(1)
@@ -1146,7 +1146,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "SortStrings",
-			Params: []kind{listKind},
+			Params: []ValKind{listKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				a := c.strList(0)
@@ -1159,7 +1159,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "IsSorted",
-			Params: []kind{listKind, topKind},
+			Params: []ValKind{listKind, topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				list, cmp := c.list(0), c.value(1)
@@ -1172,7 +1172,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "IsSortedStrings",
-			Params: []kind{listKind},
+			Params: []ValKind{listKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				a := c.strList(0)
@@ -1207,7 +1207,7 @@ var builtinPackages = map[string]*builtinPkg{
 }`,
 	},
 	"math": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:  "MaxExp",
 			Const: "2147483647",
 		}, {
@@ -1245,7 +1245,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "1",
 		}, {
 			Name:   "Jacobi",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				x, y := c.bigInt(0), c.bigInt(1)
@@ -1260,7 +1260,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "62",
 		}, {
 			Name:   "Floor",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1274,7 +1274,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Ceil",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1288,7 +1288,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Trunc",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1302,7 +1302,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Round",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1316,7 +1316,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "RoundToEven",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1330,7 +1330,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "MultipleOf",
-			Params: []kind{numKind, numKind},
+			Params: []ValKind{numKind, numKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				x, y := c.decimal(0), c.decimal(1)
@@ -1344,7 +1344,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Abs",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1358,7 +1358,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Acosh",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1370,7 +1370,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Asin",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1382,7 +1382,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Acos",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1394,7 +1394,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Asinh",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1406,7 +1406,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Atan",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1418,7 +1418,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Atan2",
-			Params: []kind{numKind, numKind},
+			Params: []ValKind{numKind, numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				y, x := c.float64(0), c.float64(1)
@@ -1430,7 +1430,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Atanh",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1442,7 +1442,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Cbrt",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1489,7 +1489,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "0.43429448190325182765112891891660508229439700580366656611445378",
 		}, {
 			Name:   "Copysign",
-			Params: []kind{numKind, numKind},
+			Params: []ValKind{numKind, numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x, y := c.decimal(0), c.decimal(1)
@@ -1504,7 +1504,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Dim",
-			Params: []kind{numKind, numKind},
+			Params: []ValKind{numKind, numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x, y := c.decimal(0), c.decimal(1)
@@ -1524,7 +1524,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Erf",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1536,7 +1536,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Erfc",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1548,7 +1548,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Erfinv",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1560,7 +1560,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Erfcinv",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1572,7 +1572,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Exp",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1586,7 +1586,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Exp2",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1600,7 +1600,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Expm1",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1612,7 +1612,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Gamma",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1624,7 +1624,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Hypot",
-			Params: []kind{numKind, numKind},
+			Params: []ValKind{numKind, numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				p, q := c.float64(0), c.float64(1)
@@ -1636,7 +1636,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "J0",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1648,7 +1648,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Y0",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1660,7 +1660,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "J1",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1672,7 +1672,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Y1",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1684,7 +1684,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Jn",
-			Params: []kind{intKind, numKind},
+			Params: []ValKind{intKind, numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				n, x := c.int(0), c.float64(1)
@@ -1696,7 +1696,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Yn",
-			Params: []kind{intKind, numKind},
+			Params: []ValKind{intKind, numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				n, x := c.int(0), c.float64(1)
@@ -1708,7 +1708,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Ldexp",
-			Params: []kind{numKind, intKind},
+			Params: []ValKind{numKind, intKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				frac, exp := c.float64(0), c.int(1)
@@ -1720,7 +1720,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Log",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1734,7 +1734,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Log10",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1748,7 +1748,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Log2",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1767,7 +1767,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Log1p",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1779,7 +1779,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Logb",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1791,7 +1791,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Ilogb",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1803,7 +1803,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Mod",
-			Params: []kind{numKind, numKind},
+			Params: []ValKind{numKind, numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x, y := c.float64(0), c.float64(1)
@@ -1815,7 +1815,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Pow",
-			Params: []kind{numKind, numKind},
+			Params: []ValKind{numKind, numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x, y := c.decimal(0), c.decimal(1)
@@ -1829,7 +1829,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Pow10",
-			Params: []kind{intKind},
+			Params: []ValKind{intKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				n := c.int32(0)
@@ -1841,7 +1841,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Remainder",
-			Params: []kind{numKind, numKind},
+			Params: []ValKind{numKind, numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x, y := c.float64(0), c.float64(1)
@@ -1853,7 +1853,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Signbit",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				x := c.decimal(0)
@@ -1865,7 +1865,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Cos",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1877,7 +1877,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Sin",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1889,7 +1889,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Sinh",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1901,7 +1901,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Cosh",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1913,7 +1913,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Sqrt",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1925,7 +1925,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Tan",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1937,7 +1937,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Tanh",
-			Params: []kind{numKind},
+			Params: []ValKind{numKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				x := c.float64(0)
@@ -1950,9 +1950,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"math/bits": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Lsh",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				x, n := c.bigInt(0), c.uint(1)
@@ -1966,7 +1966,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Rsh",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				x, n := c.bigInt(0), c.uint(1)
@@ -1980,7 +1980,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "At",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				x, i := c.bigInt(0), c.uint(1)
@@ -1995,7 +1995,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Set",
-			Params: []kind{intKind, intKind, intKind},
+			Params: []ValKind{intKind, intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				x, i, bit := c.bigInt(0), c.int(1), c.uint(2)
@@ -2009,7 +2009,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "And",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				a, b := c.bigInt(0), c.bigInt(1)
@@ -2023,7 +2023,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Or",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				a, b := c.bigInt(0), c.bigInt(1)
@@ -2037,7 +2037,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Xor",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				a, b := c.bigInt(0), c.bigInt(1)
@@ -2051,7 +2051,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Clear",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				a, b := c.bigInt(0), c.bigInt(1)
@@ -2065,7 +2065,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "OnesCount",
-			Params: []kind{intKind},
+			Params: []ValKind{intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				x := c.bigInt(0)
@@ -2081,7 +2081,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Len",
-			Params: []kind{intKind},
+			Params: []ValKind{intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				x := c.bigInt(0)
@@ -2094,9 +2094,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"net": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "SplitHostPort",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2112,7 +2112,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "JoinHostPort",
-			Params: []kind{topKind, topKind},
+			Params: []ValKind{topKind, topKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				host, port := c.value(0), c.value(1)
@@ -2161,7 +2161,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FQDN",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2185,7 +2185,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "16",
 		}, {
 			Name:   "ParseIP",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2201,7 +2201,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "IPv4",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2214,7 +2214,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "IP",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2227,7 +2227,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "LoopbackIP",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2239,7 +2239,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "MulticastIP",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2251,7 +2251,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "InterfaceLocalMulticastIP",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2263,7 +2263,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "LinkLocalMulticastIP",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2275,7 +2275,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "LinkLocalUnicastIP",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2287,7 +2287,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "GlobalUnicastIP",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2299,7 +2299,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "UnspecifiedIP",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2311,7 +2311,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ToIP4",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2331,7 +2331,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ToIP16",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2347,7 +2347,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "IPString",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				ip := c.value(0)
@@ -2364,9 +2364,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"path": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Split",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				path := c.string(0)
@@ -2379,7 +2379,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Match",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				pattern, name := c.string(0), c.string(1)
@@ -2391,7 +2391,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Clean",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				path := c.string(0)
@@ -2403,7 +2403,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Ext",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				path := c.string(0)
@@ -2415,7 +2415,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Base",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				path := c.string(0)
@@ -2427,7 +2427,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "IsAbs",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				path := c.string(0)
@@ -2439,7 +2439,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Dir",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				path := c.string(0)
@@ -2452,9 +2452,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"regexp": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Valid",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				pattern := c.string(0)
@@ -2467,7 +2467,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Find",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				pattern, s := c.string(0), c.string(1)
@@ -2487,7 +2487,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FindAll",
-			Params: []kind{stringKind, stringKind, intKind},
+			Params: []ValKind{stringKind, stringKind, intKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				pattern, s, n := c.string(0), c.string(1), c.int(2)
@@ -2507,7 +2507,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FindSubmatch",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				pattern, s := c.string(0), c.string(1)
@@ -2527,7 +2527,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FindAllSubmatch",
-			Params: []kind{stringKind, stringKind, intKind},
+			Params: []ValKind{stringKind, stringKind, intKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				pattern, s, n := c.string(0), c.string(1), c.int(2)
@@ -2547,7 +2547,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FindNamedSubmatch",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: structKind,
 			Func: func(c *callCtxt) {
 				pattern, s := c.string(0), c.string(1)
@@ -2577,7 +2577,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FindAllNamedSubmatch",
-			Params: []kind{stringKind, stringKind, intKind},
+			Params: []ValKind{stringKind, stringKind, intKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				pattern, s, n := c.string(0), c.string(1), c.int(2)
@@ -2611,7 +2611,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Match",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				pattern, s := c.string(0), c.string(1)
@@ -2623,7 +2623,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "QuoteMeta",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2636,9 +2636,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"strconv": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Unquote",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2650,7 +2650,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ParseBool",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				str := c.string(0)
@@ -2662,7 +2662,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FormatBool",
-			Params: []kind{boolKind},
+			Params: []ValKind{boolKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				b := c.bool(0)
@@ -2674,7 +2674,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ParseFloat",
-			Params: []kind{stringKind, intKind},
+			Params: []ValKind{stringKind, intKind},
 			Result: numKind,
 			Func: func(c *callCtxt) {
 				s, bitSize := c.string(0), c.int(1)
@@ -2689,7 +2689,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "64",
 		}, {
 			Name:   "ParseUint",
-			Params: []kind{stringKind, intKind, intKind},
+			Params: []ValKind{stringKind, intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				s, base, bitSize := c.string(0), c.int(1), c.int(2)
@@ -2701,7 +2701,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ParseInt",
-			Params: []kind{stringKind, intKind, intKind},
+			Params: []ValKind{stringKind, intKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				s, base, bitSize := c.string(0), c.int(1), c.int(2)
@@ -2713,7 +2713,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Atoi",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2725,7 +2725,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FormatFloat",
-			Params: []kind{numKind, intKind, intKind, intKind},
+			Params: []ValKind{numKind, intKind, intKind, intKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				f, fmt, prec, bitSize := c.float64(0), c.byte(1), c.int(2), c.int(3)
@@ -2737,7 +2737,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FormatUint",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				i, base := c.uint64(0), c.int(1)
@@ -2749,7 +2749,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "FormatInt",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				i, base := c.int64(0), c.int(1)
@@ -2761,7 +2761,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Quote",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2773,7 +2773,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "QuoteToASCII",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2785,7 +2785,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "QuoteToGraphic",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2797,7 +2797,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "QuoteRune",
-			Params: []kind{intKind},
+			Params: []ValKind{intKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				r := c.rune(0)
@@ -2809,7 +2809,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "QuoteRuneToASCII",
-			Params: []kind{intKind},
+			Params: []ValKind{intKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				r := c.rune(0)
@@ -2821,7 +2821,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "QuoteRuneToGraphic",
-			Params: []kind{intKind},
+			Params: []ValKind{intKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				r := c.rune(0)
@@ -2833,7 +2833,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "IsPrint",
-			Params: []kind{intKind},
+			Params: []ValKind{intKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				r := c.rune(0)
@@ -2845,7 +2845,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "IsGraphic",
-			Params: []kind{intKind},
+			Params: []ValKind{intKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				r := c.rune(0)
@@ -2858,9 +2858,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"strings": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "ByteAt",
-			Params: []kind{bytesKind | stringKind, intKind},
+			Params: []ValKind{bytesKind | stringKind, intKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				b, i := c.bytes(0), c.int(1)
@@ -2875,7 +2875,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ByteSlice",
-			Params: []kind{bytesKind | stringKind, intKind, intKind},
+			Params: []ValKind{bytesKind | stringKind, intKind, intKind},
 			Result: bytesKind | stringKind,
 			Func: func(c *callCtxt) {
 				b, start, end := c.bytes(0), c.int(1), c.int(2)
@@ -2890,7 +2890,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Runes",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2902,7 +2902,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "MinRunes",
-			Params: []kind{stringKind, intKind},
+			Params: []ValKind{stringKind, intKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				s, min := c.string(0), c.int(1)
@@ -2915,7 +2915,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "MaxRunes",
-			Params: []kind{stringKind, intKind},
+			Params: []ValKind{stringKind, intKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				s, max := c.string(0), c.int(1)
@@ -2928,7 +2928,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ToTitle",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2951,7 +2951,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ToCamel",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -2974,7 +2974,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Compare",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				a, b := c.string(0), c.string(1)
@@ -2986,7 +2986,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Count",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				s, substr := c.string(0), c.string(1)
@@ -2998,7 +2998,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Contains",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				s, substr := c.string(0), c.string(1)
@@ -3010,7 +3010,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ContainsAny",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				s, chars := c.string(0), c.string(1)
@@ -3022,7 +3022,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "LastIndex",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				s, substr := c.string(0), c.string(1)
@@ -3034,7 +3034,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "IndexAny",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				s, chars := c.string(0), c.string(1)
@@ -3046,7 +3046,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "LastIndexAny",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				s, chars := c.string(0), c.string(1)
@@ -3058,7 +3058,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "SplitN",
-			Params: []kind{stringKind, stringKind, intKind},
+			Params: []ValKind{stringKind, stringKind, intKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				s, sep, n := c.string(0), c.string(1), c.int(2)
@@ -3070,7 +3070,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "SplitAfterN",
-			Params: []kind{stringKind, stringKind, intKind},
+			Params: []ValKind{stringKind, stringKind, intKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				s, sep, n := c.string(0), c.string(1), c.int(2)
@@ -3082,7 +3082,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Split",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				s, sep := c.string(0), c.string(1)
@@ -3094,7 +3094,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "SplitAfter",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				s, sep := c.string(0), c.string(1)
@@ -3106,7 +3106,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Fields",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: listKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -3118,7 +3118,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Join",
-			Params: []kind{listKind, stringKind},
+			Params: []ValKind{listKind, stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				a, sep := c.strList(0), c.string(1)
@@ -3130,7 +3130,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "HasPrefix",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				s, prefix := c.string(0), c.string(1)
@@ -3142,7 +3142,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "HasSuffix",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				s, suffix := c.string(0), c.string(1)
@@ -3154,7 +3154,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Repeat",
-			Params: []kind{stringKind, intKind},
+			Params: []ValKind{stringKind, intKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s, count := c.string(0), c.int(1)
@@ -3166,7 +3166,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ToUpper",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -3178,7 +3178,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ToLower",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -3190,7 +3190,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Trim",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s, cutset := c.string(0), c.string(1)
@@ -3202,7 +3202,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "TrimLeft",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s, cutset := c.string(0), c.string(1)
@@ -3214,7 +3214,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "TrimRight",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s, cutset := c.string(0), c.string(1)
@@ -3226,7 +3226,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "TrimSpace",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -3238,7 +3238,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "TrimPrefix",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s, prefix := c.string(0), c.string(1)
@@ -3250,7 +3250,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "TrimSuffix",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s, suffix := c.string(0), c.string(1)
@@ -3262,7 +3262,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Replace",
-			Params: []kind{stringKind, stringKind, stringKind, intKind},
+			Params: []ValKind{stringKind, stringKind, stringKind, intKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s, old, new, n := c.string(0), c.string(1), c.string(2), c.int(3)
@@ -3274,7 +3274,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Index",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				s, substr := c.string(0), c.string(1)
@@ -3287,9 +3287,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"struct": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "MinFields",
-			Params: []kind{structKind, intKind},
+			Params: []ValKind{structKind, intKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				object, n := c.structVal(0), c.int(1)
@@ -3306,7 +3306,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "MaxFields",
-			Params: []kind{structKind, intKind},
+			Params: []ValKind{structKind, intKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				object, n := c.structVal(0), c.int(1)
@@ -3324,9 +3324,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"text/tabwriter": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Write",
-			Params: []kind{topKind},
+			Params: []ValKind{topKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				data := c.value(0)
@@ -3371,9 +3371,9 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"text/template": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:   "Execute",
-			Params: []kind{stringKind, topKind},
+			Params: []ValKind{stringKind, topKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				templ, data := c.string(0), c.value(1)
@@ -3397,7 +3397,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "HTMLEscape",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -3409,7 +3409,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "JSEscape",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -3422,7 +3422,7 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"time": {
-		native: []*builtin{{
+		Native: []*Builtin{{
 			Name:  "Nanosecond",
 			Const: "1",
 		}, {
@@ -3442,7 +3442,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "3600000000000",
 		}, {
 			Name:   "Duration",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -3457,7 +3457,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "ParseDuration",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: intKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -3569,7 +3569,7 @@ var builtinPackages = map[string]*builtinPkg{
 			Const: "6",
 		}, {
 			Name:   "Time",
-			Params: []kind{stringKind},
+			Params: []ValKind{stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				s := c.string(0)
@@ -3581,7 +3581,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Format",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: boolKind,
 			Func: func(c *callCtxt) {
 				value, layout := c.string(0), c.string(1)
@@ -3593,7 +3593,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Parse",
-			Params: []kind{stringKind, stringKind},
+			Params: []ValKind{stringKind, stringKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				layout, value := c.string(0), c.string(1)
@@ -3609,7 +3609,7 @@ var builtinPackages = map[string]*builtinPkg{
 			},
 		}, {
 			Name:   "Unix",
-			Params: []kind{intKind, intKind},
+			Params: []ValKind{intKind, intKind},
 			Result: stringKind,
 			Func: func(c *callCtxt) {
 				sec, nsec := c.int64(0), c.int64(1)
@@ -3623,7 +3623,7 @@ var builtinPackages = map[string]*builtinPkg{
 		}},
 	},
 	"tool": {
-		native: []*builtin{{}},
+		Native: []*Builtin{{}},
 		cue: `{
 	Command: {
 		$usage?: string
@@ -3643,7 +3643,7 @@ var builtinPackages = map[string]*builtinPkg{
 }`,
 	},
 	"tool/cli": {
-		native: []*builtin{{}},
+		Native: []*Builtin{{}},
 		cue: `{
 	Print: {
 		$id:  *"tool/cli.Print" | "print"
@@ -3652,7 +3652,7 @@ var builtinPackages = map[string]*builtinPkg{
 }`,
 	},
 	"tool/exec": {
-		native: []*builtin{{}},
+		Native: []*Builtin{{}},
 		cue: `{
 	Run: {
 		$id: *"tool/exec.Run" | "exec"
@@ -3668,7 +3668,7 @@ var builtinPackages = map[string]*builtinPkg{
 }`,
 	},
 	"tool/file": {
-		native: []*builtin{{}},
+		Native: []*Builtin{{}},
 		cue: `{
 	Read: {
 		$id:      "tool/file.Read"
@@ -3695,7 +3695,7 @@ var builtinPackages = map[string]*builtinPkg{
 }`,
 	},
 	"tool/http": {
-		native: []*builtin{{}},
+		Native: []*Builtin{{}},
 		cue: `{
 	Get: Do & {
 		method: "GET"
@@ -3737,7 +3737,7 @@ var builtinPackages = map[string]*builtinPkg{
 }`,
 	},
 	"tool/os": {
-		native: []*builtin{{}},
+		Native: []*Builtin{{}},
 		cue: `{
 	Name ::  !="" & !~"^[$]"
 	Value :: bool | number | *string | null

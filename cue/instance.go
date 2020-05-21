@@ -253,7 +253,7 @@ func (inst *Instance) Build(p *build.Instance) *Instance {
 	}
 	i.scope = v.obj
 
-	if err := resolveFiles(idx, p); err != nil {
+	if err := ResolveFiles(idx, p); err != nil {
 		i.setError(err)
 		return i
 	}

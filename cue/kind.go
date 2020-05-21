@@ -18,16 +18,16 @@ import (
 	"fmt"
 )
 
-func unifyType(a, b kind) kind {
+func unifyType(a, b ValKind) ValKind {
 	const mask = topKind
 	isRef := (a &^ mask) | (b &^ mask)
 	return isRef | (a & b)
 }
 
-type kind uint16
+type ValKind uint16
 
 const (
-	unknownKind kind = (1 << iota)
+	unknownKind ValKind = (1 << iota)
 	nullKind
 	boolKind
 	intKind
@@ -86,25 +86,25 @@ func isCustom(v value) bool {
 }
 
 // isDone means that the value will not evaluate further.
-func (k kind) isDone() bool        { return k&referenceKind == bottomKind }
-func (k kind) hasReferences() bool { return k&referenceKind != bottomKind }
-func (k kind) isConcrete() bool    { return k&^(lambdaKind-1) == bottomKind }
-func (k kind) isGround() bool      { return k&^(nonGround-1) == bottomKind }
-func (k kind) isAtom() bool        { return k.isGround() && k&atomKind != bottomKind }
-func (k kind) isAnyOf(of kind) bool {
+func (k ValKind) isDone() bool        { return k&referenceKind == bottomKind }
+func (k ValKind) hasReferences() bool { return k&referenceKind != bottomKind }
+func (k ValKind) isConcrete() bool    { return k&^(lambdaKind-1) == bottomKind }
+func (k ValKind) isGround() bool      { return k&^(nonGround-1) == bottomKind }
+func (k ValKind) isAtom() bool        { return k.isGround() && k&atomKind != bottomKind }
+func (k ValKind) isAnyOf(of ValKind) bool {
 	return k&of != bottomKind
 }
-func (k kind) stringable() bool {
+func (k ValKind) stringable() bool {
 	return k.isGround() && k&stringKind|scalarKinds != bottomKind
 }
 
-func (k kind) String() string {
+func (k ValKind) String() string {
 	str := ""
 	if k&topKind == topKind {
 		str = "_"
 		goto finalize
 	}
-	for i := kind(1); i < referenceKind; i <<= 1 {
+	for i := ValKind(1); i < referenceKind; i <<= 1 {
 		t := ""
 		switch k & i {
 		case bottomKind:
@@ -166,7 +166,7 @@ finalize:
 // - keep type compatibility mapped at a central place
 // - reduce the amount op type switching.
 // - simplifies testing
-func matchBinOpKind(op op, a, b kind) (k kind, swap bool, msg string) {
+func matchBinOpKind(op op, a, b ValKind) (k ValKind, swap bool, msg string) {
 	if op == opDisjunction {
 		return a | b, false, ""
 	}

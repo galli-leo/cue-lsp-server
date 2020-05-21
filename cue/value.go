@@ -36,7 +36,7 @@ type value interface {
 	// evalPartial evaluates a value without choosing default values.
 	evalPartial(*context) evaluated
 
-	kind() kind
+	kind() ValKind
 
 	// subsumesImpl is only defined for non-reference types.
 	// It should only be called by the subsumes function.
@@ -69,10 +69,10 @@ type iterAtter interface {
 // caller must be implemented by any concrete lambdaKind
 type caller interface {
 	call(ctx *context, src source, args ...evaluated) value
-	returnKind() kind
+	returnKind() ValKind
 }
 
-func checkKind(ctx *context, x value, want kind) *bottom {
+func checkKind(ctx *context, x value, want ValKind) *bottom {
 	if b, ok := x.(*bottom); ok {
 		return b
 	}
@@ -163,34 +163,34 @@ func (b baseValue) base() baseValue {
 	return b
 }
 
-func (b baseValue) strValue() string { panic("unimplemented") }
-func (b baseValue) returnKind() kind { panic("unimplemented") }
+func (b baseValue) strValue() string    { panic("unimplemented") }
+func (b baseValue) returnKind() ValKind { panic("unimplemented") }
 
 // top is the top of the value lattice. It subsumes all possible values.
 type top struct{ baseValue }
 
-func (x *top) kind() kind { return topKind }
+func (x *top) kind() ValKind { return topKind }
 
 // basicType represents the root class of any specific type.
 type basicType struct {
 	baseValue
-	k kind
+	k ValKind
 }
 
-func (x *basicType) kind() kind { return x.k | nonGround }
+func (x *basicType) kind() ValKind { return x.k | nonGround }
 
 // Literals
 
 type nullLit struct{ baseValue }
 
-func (x *nullLit) kind() kind { return nullKind }
+func (x *nullLit) kind() ValKind { return nullKind }
 
 type boolLit struct {
 	baseValue
 	b bool
 }
 
-func (x *boolLit) kind() kind { return boolKind }
+func (x *boolLit) kind() ValKind { return boolKind }
 
 func boolTonode(src source, b bool) evaluated {
 	return &boolLit{src.base(), b}
@@ -202,7 +202,7 @@ type bytesLit struct {
 	re *regexp.Regexp // only set if needed
 }
 
-func (x *bytesLit) kind() kind       { return bytesKind }
+func (x *bytesLit) kind() ValKind    { return bytesKind }
 func (x *bytesLit) strValue() string { return string(x.b) }
 
 func (x *bytesLit) iterAt(ctx *context, i int) arc {
@@ -255,7 +255,7 @@ type stringLit struct {
 	// TODO: maintain extended grapheme index cache.
 }
 
-func (x *stringLit) kind() kind       { return stringKind }
+func (x *stringLit) kind() ValKind    { return stringKind }
 func (x *stringLit) strValue() string { return x.str }
 
 func (x *stringLit) iterAt(ctx *context, i int) arc {
@@ -305,11 +305,11 @@ func (x *stringLit) slice(ctx *context, lo, hi *numLit) evaluated {
 type numLit struct {
 	baseValue
 	rep literal.Multiplier
-	k   kind
+	k   ValKind
 	v   apd.Decimal
 }
 
-func newNum(src source, k kind, rep literal.Multiplier) *numLit {
+func newNum(src source, k ValKind, rep literal.Multiplier) *numLit {
 	if k&numKind == 0 {
 		panic("not a number")
 	}
@@ -324,7 +324,7 @@ func newFloat(src source, rep literal.Multiplier) *numLit {
 	return newNum(src, floatKind, rep)
 }
 
-func (n numLit) specialize(k kind) *numLit {
+func (n numLit) specialize(k ValKind) *numLit {
 	n.k = k
 	return &n
 }
@@ -365,7 +365,7 @@ func (n *numLit) String() string {
 	return s // also render info
 }
 
-func parseInt(k kind, s string) *numLit {
+func parseInt(k ValKind, s string) *numLit {
 	num := newInt(newExpr(ast.NewLit(token.INT, s)), 0)
 	_, _, err := num.v.SetString(s)
 	if err != nil {
@@ -387,7 +387,7 @@ var ten = big.NewInt(10)
 
 var one = parseInt(intKind, "1")
 
-func (x *numLit) kind() kind       { return x.k }
+func (x *numLit) kind() ValKind    { return x.k }
 func (x *numLit) strValue() string { return x.v.String() }
 
 func (x *numLit) isInt(ctx *context) bool {
@@ -407,17 +407,17 @@ type durationLit struct {
 	d time.Duration
 }
 
-func (x *durationLit) kind() kind       { return durationKind }
+func (x *durationLit) kind() ValKind    { return durationKind }
 func (x *durationLit) strValue() string { return x.d.String() }
 
 type bound struct {
 	baseValue
-	op    op   // opNeq, opLss, opLeq, opGeq, or opGtr
-	k     kind // mostly used for number kind
+	op    op      // opNeq, opLss, opLeq, opGeq, or opGtr
+	k     ValKind // mostly used for number kind
 	value value
 }
 
-func newBound(ctx *context, base baseValue, op op, k kind, v value) evaluated {
+func newBound(ctx *context, base baseValue, op op, k ValKind, v value) evaluated {
 	kv := v.kind()
 	if kv.isAnyOf(numKind) {
 		kv |= numKind
@@ -433,7 +433,7 @@ func newBound(ctx *context, base baseValue, op op, k kind, v value) evaluated {
 	return &bound{base, op, unifyType(k&topKind, kv) | nonGround, v}
 }
 
-func (x *bound) kind() kind {
+func (x *bound) kind() ValKind {
 	return x.k
 }
 
@@ -502,11 +502,11 @@ var predefinedRanges = map[string]evaluated{
 
 type interpolation struct {
 	baseValue
-	k     kind    // string or bytes
+	k     ValKind // string or bytes
 	parts []value // odd: strings, even expressions
 }
 
-func (x *interpolation) kind() kind { return x.k | nonGround }
+func (x *interpolation) kind() ValKind { return x.k | nonGround }
 
 type list struct {
 	baseValue
@@ -543,7 +543,7 @@ func (x *list) manifest(ctx *context) evaluated {
 	return x
 }
 
-func (x *list) kind() kind {
+func (x *list) kind() ValKind {
 	k := listKind
 	if _, ok := x.len.(*numLit); ok {
 		return k
@@ -980,7 +980,7 @@ func newStruct(src source) *structLit {
 	return &structLit{baseValue: src.base()}
 }
 
-func (x *structLit) kind() kind { return structKind }
+func (x *structLit) kind() ValKind { return structKind }
 
 type arcs []arc
 
@@ -1383,7 +1383,7 @@ type nodeRef struct {
 	label label // for direct ancestor nodes
 }
 
-func (x *nodeRef) kind() kind {
+func (x *nodeRef) kind() ValKind {
 	// TODO(REWORK): no context available
 	// n := x.node.deref(nil)
 	n := x.node
@@ -1397,7 +1397,7 @@ type selectorExpr struct {
 }
 
 // TODO: could this be narrowed down?
-func (x *selectorExpr) kind() kind {
+func (x *selectorExpr) kind() ValKind {
 	isRef := x.x.kind() & referenceKind
 	return topKind | isRef
 }
@@ -1409,7 +1409,7 @@ type indexExpr struct {
 }
 
 // TODO: narrow this down when we have list types.
-func (x *indexExpr) kind() kind { return topKind | referenceKind }
+func (x *indexExpr) kind() ValKind { return topKind | referenceKind }
 
 type sliceExpr struct {
 	baseValue
@@ -1419,7 +1419,7 @@ type sliceExpr struct {
 }
 
 // TODO: narrow this down when we have list types.
-func (x *sliceExpr) kind() kind { return topKind | referenceKind }
+func (x *sliceExpr) kind() ValKind { return topKind | referenceKind }
 
 type callExpr struct {
 	baseValue
@@ -1427,12 +1427,12 @@ type callExpr struct {
 	args []value
 }
 
-func (x *callExpr) kind() kind {
+func (x *callExpr) kind() ValKind {
 	// TODO: could this be narrowed down?
 	switch c := x.x.(type) {
 	case *lambdaExpr:
 		return c.returnKind() | nonGround
-	case *builtin:
+	case *Builtin:
 		switch len(x.args) {
 		case len(c.Params):
 			return c.Result
@@ -1450,10 +1450,10 @@ type customValidator struct {
 	baseValue
 
 	args []evaluated // any but the first value
-	call *builtin    // function must return a bool
+	call *Builtin    // function must return a bool
 }
 
-func (x *customValidator) kind() kind {
+func (x *customValidator) kind() ValKind {
 	if len(x.call.Params) == 0 {
 		return bottomKind
 	}
@@ -1516,8 +1516,8 @@ type lambdaExpr struct {
 }
 
 // TODO: could this be narrowed down?
-func (x *lambdaExpr) kind() kind       { return lambdaKind }
-func (x *lambdaExpr) returnKind() kind { return x.value.kind() }
+func (x *lambdaExpr) kind() ValKind       { return lambdaKind }
+func (x *lambdaExpr) returnKind() ValKind { return x.value.kind() }
 
 // call calls and evaluates a  lambda expression. It is assumed that x may be
 // destroyed, either because it is copied as a result of a reference or because
@@ -1553,7 +1553,7 @@ type unaryExpr struct {
 	x  value
 }
 
-func (x *unaryExpr) kind() kind { return x.x.kind() }
+func (x *unaryExpr) kind() ValKind { return x.x.kind() }
 
 func compileRegexp(ctx *context, v value) value {
 	var err error
@@ -1620,7 +1620,7 @@ func updateBin(ctx *context, bin *binaryExpr) value {
 	return bin
 }
 
-func (x *binaryExpr) kind() kind {
+func (x *binaryExpr) kind() ValKind {
 	// TODO: cache results
 	kind, _, _ := matchBinOpKind(x.op, x.left.kind(), x.right.kind())
 	return kind | nonGround
@@ -1635,7 +1635,7 @@ type unification struct {
 	values []evaluated
 }
 
-func (x *unification) kind() kind {
+func (x *unification) kind() ValKind {
 	k := topKind
 	for _, v := range x.values {
 		k &= v.kind()
@@ -1667,8 +1667,8 @@ type dValue struct {
 	marked bool
 }
 
-func (x *disjunction) kind() kind {
-	k := kind(0)
+func (x *disjunction) kind() ValKind {
+	k := ValKind(0)
 	for _, v := range x.values {
 		k |= v.val.kind()
 	}
@@ -1808,7 +1808,7 @@ type listComprehension struct {
 	clauses yielder
 }
 
-func (x *listComprehension) kind() kind {
+func (x *listComprehension) kind() ValKind {
 	return listKind | nonGround | referenceKind
 }
 
@@ -1817,7 +1817,7 @@ type structComprehension struct {
 	clauses yielder
 }
 
-func (x *structComprehension) kind() kind {
+func (x *structComprehension) kind() ValKind {
 	return structKind | nonGround | referenceKind
 }
 
@@ -1833,7 +1833,7 @@ type fieldComprehension struct {
 	attrs *attributes
 }
 
-func (x *fieldComprehension) kind() kind {
+func (x *fieldComprehension) kind() ValKind {
 	return structKind | nonGround
 }
 
@@ -1849,7 +1849,7 @@ type yield struct {
 	value value
 }
 
-func (x *yield) kind() kind { return topKind | referenceKind }
+func (x *yield) kind() ValKind { return topKind | referenceKind }
 
 func (x *yield) yield(ctx *context, fn yieldFunc) *bottom {
 	v := x.value.evalPartial(ctx)
@@ -1868,7 +1868,7 @@ type guard struct { // rename to guard
 	value     yielder
 }
 
-func (x *guard) kind() kind { return topKind | referenceKind }
+func (x *guard) kind() ValKind { return topKind | referenceKind }
 
 func (x *guard) yield(ctx *context, fn yieldFunc) *bottom {
 	filter := ctx.manifest(x.condition)
@@ -1892,7 +1892,7 @@ type feed struct {
 	fn     *lambdaExpr
 }
 
-func (x *feed) kind() kind { return topKind | referenceKind }
+func (x *feed) kind() ValKind { return topKind | referenceKind }
 
 func (x *feed) yield(ctx *context, yfn yieldFunc) (result *bottom) {
 	if ctx.trace {

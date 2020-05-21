@@ -431,7 +431,7 @@ func (p *exporter) expr(v value) ast.Expr {
 
 	// TODO: also add position information.
 	switch x := v.(type) {
-	case *builtin:
+	case *Builtin:
 		if x.pkg == 0 {
 			return ast.NewIdent(x.Name)
 		}
@@ -512,7 +512,7 @@ func (p *exporter) expr(v value) ast.Expr {
 	case *callExpr:
 		call := &ast.CallExpr{}
 		b := x.x.evalPartial(p.ctx)
-		if b, ok := b.(*builtin); ok {
+		if b, ok := b.(*Builtin); ok {
 			call.Fun = p.expr(b)
 		} else {
 			call.Fun = p.expr(x.x)

@@ -35,7 +35,7 @@ import (
 	"cuelang.org/go/internal"
 )
 
-// A builtin is a builtin function or constant.
+// A Builtin is a Builtin function or constant.
 //
 // A function may return and a constant may be any of the following types:
 //
@@ -53,26 +53,26 @@ import (
 //   []T
 //   map[string]T
 //
-type builtin struct {
+type Builtin struct {
 	baseValue
 	Name   string
 	pkg    label
-	Params []kind
-	Result kind
+	Params []ValKind
+	Result ValKind
 	Func   func(c *callCtxt)
 	// Const  interface{}
 	Const string
 }
 
-type builtinPkg struct {
-	native []*builtin
+type BuiltinPkg struct {
+	Native []*Builtin
 	cue    string
 }
 
-func mustCompileBuiltins(ctx *context, p *builtinPkg, pkgName string) *structLit {
+func mustCompileBuiltins(ctx *context, p *BuiltinPkg, pkgName string) *structLit {
 	obj := &structLit{}
 	pkgLabel := ctx.label(pkgName, false)
-	for _, b := range p.native {
+	for _, b := range p.Native {
 		b.pkg = pkgLabel
 
 		f := ctx.label(b.Name, false) // never starts with _
@@ -114,11 +114,11 @@ func mustParseConstBuiltin(ctx *context, name, val string) evaluated {
 	return value.evalPartial(ctx)
 }
 
-var _ caller = &builtin{}
+var _ caller = &Builtin{}
 
-var lenBuiltin = &builtin{
+var lenBuiltin = &Builtin{
 	Name:   "len",
-	Params: []kind{stringKind | bytesKind | listKind | structKind},
+	Params: []ValKind{stringKind | bytesKind | listKind | structKind},
 	Result: intKind,
 	Func: func(c *callCtxt) {
 		v := c.value(0)
@@ -161,9 +161,9 @@ var lenBuiltin = &builtin{
 	},
 }
 
-var closeBuiltin = &builtin{
+var closeBuiltin = &Builtin{
 	Name:   "close",
-	Params: []kind{structKind},
+	Params: []ValKind{structKind},
 	Result: structKind,
 	Func: func(c *callCtxt) {
 		s, ok := c.args[0].(*structLit)
@@ -175,9 +175,9 @@ var closeBuiltin = &builtin{
 	},
 }
 
-var andBuiltin = &builtin{
+var andBuiltin = &Builtin{
 	Name:   "and",
-	Params: []kind{listKind},
+	Params: []ValKind{listKind},
 	Result: intKind,
 	Func: func(c *callCtxt) {
 		iter := c.iter(0)
@@ -193,9 +193,9 @@ var andBuiltin = &builtin{
 	},
 }
 
-var orBuiltin = &builtin{
+var orBuiltin = &Builtin{
 	Name:   "or",
-	Params: []kind{listKind},
+	Params: []ValKind{listKind},
 	Result: intKind,
 	Func: func(c *callCtxt) {
 		iter := c.iter(0)
@@ -217,48 +217,48 @@ var orBuiltin = &builtin{
 	},
 }
 
-func (x *builtin) representedKind() kind {
+func (x *Builtin) representedKind() ValKind {
 	if x.isValidator() {
 		return x.Params[0]
 	}
 	return x.kind()
 }
 
-func (x *builtin) kind() kind {
+func (x *Builtin) kind() ValKind {
 	return lambdaKind
 }
 
-func (x *builtin) evalPartial(ctx *context) evaluated {
+func (x *Builtin) evalPartial(ctx *context) evaluated {
 	return x
 }
 
-func (x *builtin) subsumesImpl(s *subsumer, v value) bool {
-	if y, ok := v.(*builtin); ok {
+func (x *Builtin) subsumesImpl(s *subsumer, v value) bool {
+	if y, ok := v.(*Builtin); ok {
 		return x == y
 	}
 	return false
 }
 
-func (x *builtin) name(ctx *context) string {
+func (x *Builtin) name(ctx *context) string {
 	if x.pkg == 0 {
 		return x.Name
 	}
 	return fmt.Sprintf("%s.%s", ctx.labelStr(x.pkg), x.Name)
 }
 
-func (x *builtin) isValidator() bool {
+func (x *Builtin) isValidator() bool {
 	return len(x.Params) == 1 && x.Result == boolKind
 }
 
 func convertBuiltin(v evaluated) evaluated {
-	x, ok := v.(*builtin)
+	x, ok := v.(*Builtin)
 	if ok && x.isValidator() {
 		return &customValidator{v.base(), []evaluated{}, x}
 	}
 	return v
 }
 
-func (x *builtin) call(ctx *context, src source, args ...evaluated) (ret value) {
+func (x *Builtin) call(ctx *context, src source, args ...evaluated) (ret value) {
 	if x.Func == nil {
 		return ctx.mkErr(x, "builtin %s is not a function", x.name(ctx))
 	}
@@ -326,7 +326,7 @@ func (x *builtin) call(ctx *context, src source, args ...evaluated) (ret value) 
 type callCtxt struct {
 	src     source
 	ctx     *context
-	builtin *builtin
+	builtin *Builtin
 	args    []evaluated
 	err     error
 	ret     interface{}
@@ -338,7 +338,7 @@ func (c *callCtxt) name() string {
 
 var builtins = map[string]*Instance{}
 
-func initBuiltins(pkgs map[string]*builtinPkg) {
+func initBuiltins(pkgs map[string]*BuiltinPkg) {
 	ctx := sharedIndex.newContext()
 	keys := []string{}
 	for k := range pkgs {

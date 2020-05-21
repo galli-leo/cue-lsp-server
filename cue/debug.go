@@ -179,7 +179,7 @@ func (p *printer) str(v interface{}) {
 		write("*nil*")
 	case string:
 		write(x)
-	case *builtin:
+	case *Builtin:
 		write(x.name(p.ctx))
 	case *nodeRef:
 		if p.showNodeRef {

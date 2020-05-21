@@ -80,7 +80,7 @@ func (x *indexExpr) rewrite(ctx *context, fn rewriteFunc) value {
 
 // Even more boring stuff below.
 
-func (x *builtin) rewrite(ctx *context, fn rewriteFunc) value     { return x }
+func (x *Builtin) rewrite(ctx *context, fn rewriteFunc) value     { return x }
 func (x *top) rewrite(ctx *context, fn rewriteFunc) value         { return x }
 func (x *bottom) rewrite(ctx *context, fn rewriteFunc) value      { return x }
 func (x *basicType) rewrite(ctx *context, fn rewriteFunc) value   { return x }

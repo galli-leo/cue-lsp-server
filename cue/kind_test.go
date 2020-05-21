@@ -22,9 +22,9 @@ import (
 func TestMatchBinOpKind(t *testing.T) {
 	testCases := []struct {
 		op   op
-		a    kind
-		b    kind
-		want kind
+		a    ValKind
+		b    ValKind
+		want ValKind
 	}{{
 		op:   opMul,
 		a:    floatKind,

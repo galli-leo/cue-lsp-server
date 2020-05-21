@@ -51,7 +51,7 @@ func (e *evaluator) hasErr() bool {
 	return len(e.bottom) > 0
 }
 
-func (e *evaluator) mkErr(orig, eval value, code errCode, want kind, desc string, args ...interface{}) (err *bottom) {
+func (e *evaluator) mkErr(orig, eval value, code errCode, want ValKind, desc string, args ...interface{}) (err *bottom) {
 	args = append([]interface{}{
 		eval,
 		code,
@@ -79,7 +79,7 @@ func (e *evaluator) mkErr(orig, eval value, code errCode, want kind, desc string
 	return err
 }
 
-func (e *evaluator) eval(v value, want kind, desc string, extraArgs ...interface{}) evaluated {
+func (e *evaluator) eval(v value, want ValKind, desc string, extraArgs ...interface{}) evaluated {
 	eval := e.ctx.manifest(v)
 
 	if isBottom(eval) {
@@ -96,7 +96,7 @@ func (e *evaluator) eval(v value, want kind, desc string, extraArgs ...interface
 	return eval
 }
 
-func (e *evaluator) evalPartial(v value, want kind, desc string, extraArgs ...interface{}) evaluated {
+func (e *evaluator) evalPartial(v value, want ValKind, desc string, extraArgs ...interface{}) evaluated {
 	eval := v.evalPartial(e.ctx)
 	if isBottom(eval) {
 		// handle incomplete errors separately?
@@ -110,14 +110,14 @@ func (e *evaluator) evalPartial(v value, want kind, desc string, extraArgs ...in
 	return eval
 }
 
-func (e *evaluator) evalAllowNil(v value, want kind, desc string, extraArgs ...interface{}) evaluated {
+func (e *evaluator) evalAllowNil(v value, want ValKind, desc string, extraArgs ...interface{}) evaluated {
 	if v == nil {
 		return nil
 	}
 	return e.eval(v, want, desc, extraArgs...)
 }
 
-func (e *evaluator) is(v value, want kind, desc string, args ...interface{}) bool {
+func (e *evaluator) is(v value, want ValKind, desc string, args ...interface{}) bool {
 	if isBottom(v) {
 		// Even though errors are ground, we treat them as not allowed.
 		return false

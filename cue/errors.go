@@ -160,7 +160,7 @@ type bottom struct {
 	wrapped *bottom
 }
 
-func (x *bottom) kind() kind { return bottomKind }
+func (x *bottom) kind() ValKind { return bottomKind }
 
 func (x *bottom) Positions(ctx *context) []token.Pos {
 	var a []token.Pos
