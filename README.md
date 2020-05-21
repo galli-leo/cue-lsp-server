@@ -23,13 +23,13 @@ For example, `builtin` had to be exposed.
 
 ## Project Layout
 
-### [cue-vscode-ext](cue-vscode-ext/)
+### [cue-vscode-ext/](cue-vscode-ext/)
 
 Contains a Visual Studio Code extension to use the cue LSP with.
 
 To test it out, you can just run `code --extensionDevelopmentPath=$PWD/cue-vscode-ext` from the root of the repository, after you compiled the command line with `go build -o cue-lsp ./cmd/cue`.
 
-### cmd/cue/cmd/lsp.go
+### [cmd/cue/cmd/lsp.go](cmd/cue/cmd/lsp.go)
 
 Contains the definitions for a new command available: `lsp`:
 
@@ -54,19 +54,19 @@ Global Flags:
   -v, --verbose      print information about progress
 ```
 
-### cue/lsp/
+### [cue/lsp/](cue/lsp/)
 
 Package that exposes a simple function to start the lsp at the moment.
 For now this is needed, as the lsp resides in the `internal` directory and as such cannot be directly accessed by the command package.
 
-### cue/internal/lsp
+### [cue/internal/lsp/](cue/internal/lsp/)
 
 This contains the actual implementation of the lsp, as well as any helper packages.
 
 Everything in here was originally taken from `promql-server`.
 However, the specific implementations, were reworked for CUE (e.g. `completion.go`).
 
-### cue/internal/lsp/internal/vendored
+### [cue/internal/lsp/internal/vendored/](cue/internal/lsp/internal/vendored/)
 
 To use all the types, interfaces, etc. already created for the `gopls` language server, we need to clone a part of that here (since those reside in `internal` of `gopls` as well).
 This was copied from the `promql-server`
@@ -74,12 +74,12 @@ This was copied from the `promql-server`
 `cue/internal/lsp/update_internal.sh` pulls in the latest changes from the `gopls` repository.
 This was copied from the Makefile of `promql-server`.
 
-### cue/internal/lsp/asg
+### [cue/internal/lsp/asg/](cue/internal/lsp/asg/)
 
 This package is used to provide the lsp with information about CUE files.
 The package is fairly documented, so check out the documentation there.
 
-### cue/internal/lsp/cache
+### [cue/internal/lsp/cache/](cue/internal/lsp/cache/)
 
 This was copied over from `promql-server`, but has seen heavy rewrites to make it work with CUE.
 Still needs work to make packages work nicely.
